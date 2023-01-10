@@ -2,7 +2,6 @@
 require('dotenv').config()
 const bodyParser = require('body-parser');
 const express = require('express');
-const { sequelize } = require('./models');
 const router = require('./routes');
 const app = express()
 const port = process.env.NODE_PORT || 3000

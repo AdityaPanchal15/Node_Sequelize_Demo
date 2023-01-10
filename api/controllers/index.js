@@ -1,5 +1,7 @@
 const { sequelize } = require('../../models')
 var nodemailer = require('nodemailer');
+const ejs = require('ejs');
+const path = require('path')
 const Users = sequelize.models.Users
 const Department = sequelize.models.Department
 Users.belongsTo(Department, { foreignKey:'deptId' })
@@ -89,21 +91,31 @@ exports.mailToUser = async (req,res) => {
     const user = await Users.findOne({
       where: {id: userId}
     }).then(data => data)
+
+    const context = { 
+      name: user.dataValues.name, 
+      content: user.dataValues
+    }
     
-    const body = `<h1>Welcome to ${user.dataValues.name}</h1>`
-    var mailOptions = {
-      from: 'adpanchal15@gmail.com',
-      to: user.dataValues.emailId,
-      subject: 'Sending Email using Node.js',
-      html: body
-    };
-    transporter.sendMail(mailOptions, function(error, info){
-      if (error) {
-        res.sendStatus(500).send(error);
+    ejs.renderFile(path.resolve('./views/emailTemplate.ejs'), {context}, (err, data) => {
+      if (err) {
+        console.log(err);
       } else {
-        res.send('Email sent: ' + info.response);
+        var mailOptions = {
+          from: 'adpanchal15@gmail.com',
+          to: user.dataValues.emailId,
+          subject: 'Sending Email using Node.js',
+          html: data
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+          if (error) {
+            res.sendStatus(500).send(error);
+          } else {
+            res.send('Email sent: ' + info.response);
+          }
+        });
       }
-    });
+    })
   } catch (error) {
     res.sendStatus(500).send(error);
   }

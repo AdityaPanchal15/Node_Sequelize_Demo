@@ -1,0 +1,8 @@
+<div style="margin: 0 auto; max-width: 720px; padding: 30px 0; font-family: Arial; background-color: bisque;">
+  <% if(context.name) { %>
+    <h3>Hello, <%= context.name %></h3>
+  <% } %>
+  <% Object.values(context.content).forEach(function(value){ %>
+    <p><%= value %></p>
+  <% }) %>
+</div>
